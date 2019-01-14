@@ -2,7 +2,7 @@ FROM centos:centos6.6
 MAINTAINER zck
 
 RUN yum install -y wget \
- && wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo \
+ && wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-6.repo \
  && yum clean all \
  && yum makecache \
  && yum -y update \
@@ -65,6 +65,6 @@ RUN curl -sL --retry 3 \
  && chown -R root:root $SPARK_HOME
 
 WORKDIR $SPARK_HOME
-ENTRYPOINT ["/etc/bootstrap.sh"]
 CMD ["bin/spark-class", "org.apache.spark.deploy.master.Master"]
+ENTRYPOINT ["/etc/bootstrap.sh"]
 
