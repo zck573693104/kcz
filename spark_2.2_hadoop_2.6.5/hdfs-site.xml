@@ -14,4 +14,8 @@
                 <name>dfs.datanode.data.dir</name>
                 <value>file:/data/hadoop/dfs/data</value>
         </property>
+       <property>
+        <name>dfs.namenode.secondary.http-address</name>
+        <value>worker1:50090</value>
+    </property>
 </configuration>
