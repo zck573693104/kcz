@@ -16,6 +16,7 @@ services:
       - 7005
       - 7077
       - 6066
+      - 18080
     ports:
       - 4040:4040
       - 6066:6066
@@ -24,14 +25,15 @@ services:
       - 50070:50070
       - 9000:9000
       - "40010:22"
+      - 18080:18080
     volumes:
       - ./conf/master:/conf
       - ./data:/tmp/data
 
-  worker:
+  worker1:
     build: .
     command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
-    hostname: worker
+    hostname: worker1
     environment:
       SPARK_CONF_DIR: /conf
       SPARK_WORKER_CORES: 1
@@ -47,6 +49,7 @@ services:
       - 7014
       - 7015
       - 8881
+      - 18080
     ports:
       - 8081:8081
       - "40002:22"

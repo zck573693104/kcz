@@ -60,6 +60,7 @@ COPY core-site.xml $HADOOP_HOME/etc/hadoop/
 COPY hdfs-site.xml $HADOOP_HOME/etc/hadoop/
 COPY hadoop-env.sh $HADOOP_HOME/etc/hadoop/
 COPY yarn-env.sh $HADOOP_HOME/etc/hadoop/
+COPY spark-env.sh $SPARK_HOME/conf/
 WORKDIR $SPARK_HOME
 CMD ["bin/spark-class", "org.apache.spark.deploy.master.Master"]
 ENTRYPOINT ["/etc/bootstrap.sh"]
