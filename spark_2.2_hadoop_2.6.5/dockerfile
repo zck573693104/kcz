@@ -67,6 +67,8 @@ COPY slaves $HADOOP_HOME/etc/hadoop/
 COPY mapred-site.xml $HADOOP_HOME/etc/hadoop/
 COPY yarn-site.xml $HADOOP_HOME/etc/hadoop/
 COPY spark-env.sh $SPARK_HOME/conf/
+COPY run.sh /usr/local/
+COPY initRun.sh /usr/local/
 WORKDIR $SPARK_HOME
 CMD ["bin/spark-class", "org.apache.spark.deploy.master.Master"]
 ENTRYPOINT ["/etc/bootstrap.sh"]

@@ -32,6 +32,7 @@ services:
       - 8088:8088
       - 8042:8042
     extra_hosts:
+      - "master:172.24.0.2"
       - "worker1:172.24.0.3"
       - "worker2:172.24.0.4"
     volumes:
@@ -39,13 +40,15 @@ services:
       - ./data:/tmp/data
 
   worker1:
+    depends_on:
+      - "master"
     build: .
     command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
     hostname: worker1
     environment:
       SPARK_CONF_DIR: /conf
       SPARK_WORKER_CORES: 1
-      SPARK_WORKER_MEMORY: 512M
+      SPARK_WORKER_MEMORY: 2048M
       SPARK_WORKER_PORT: 8881
       SPARK_WORKER_WEBUI_PORT: 8081
       SPARK_PUBLIC_DNS: localhost
@@ -62,6 +65,9 @@ services:
     ports:
       - 8081:8081
       - "40002:22"
+    extra_hosts:
+      - "master:172.24.0.2"
+      - "worker1:172.24.0.3"
     volumes:
       - ./conf/worker:/conf
       - ./data:/tmp/data
