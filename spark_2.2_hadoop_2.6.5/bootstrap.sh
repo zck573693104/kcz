@@ -8,3 +8,4 @@ then
 else
 	/bin/bash -c "$*"
 fi
+service mysqld start
