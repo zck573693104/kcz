@@ -2,12 +2,13 @@ version: "2.1"
 services:
   master:
     build: .
-    command: bin/spark-class org.apache.spark.deploy.master.Master -h master
+    container_name: spark_master
+    command:
+       bin/spark-class org.apache.spark.deploy.master.Master -h master
     hostname: master
     environment:
       MASTER: spark://master:7077
       SPARK_CONF_DIR: /conf
-      SPARK_PUBLIC_DNS: localhost
     expose:
       - 7001
       - 7002
@@ -20,7 +21,7 @@ services:
       - 8088
       - 8042
       - 9000
-      - 3306
+      - 9999
     ports:
       - 4040:4040
       - 6066:6066
@@ -33,20 +34,22 @@ services:
       - 8088:8088
       - 8042:8042
       - 8089:8089
-      - 3306:3307
+      - 5066:5066
+      - 9999:9999
     extra_hosts:
       - "master:172.24.0.2"
       - "worker1:172.24.0.3"
       - "worker2:172.24.0.4"
     volumes:
       - ./conf/master:/conf
-      - ./data:/tmp/data
-
+      - ./tmp:/tmp/data
   worker1:
     depends_on:
       - "master"
     build: .
-    command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
+    container_name: spark_worker1
+    command:
+      bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
     hostname: worker1
     environment:
       SPARK_CONF_DIR: /conf
@@ -74,5 +77,5 @@ services:
       - "master:172.24.0.2"
       - "worker1:172.24.0.3"
     volumes:
-      - ./conf/worker:/conf
-      - ./data:/tmp/data
+      - ./conf/master:/conf
+      - ./tmp:/tmp/data
