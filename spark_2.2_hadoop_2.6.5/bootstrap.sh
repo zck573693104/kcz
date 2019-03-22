@@ -1,6 +1,5 @@
 #!/bin/bash
 service sshd start
-service mysqld start
 CMD=${1:-"exit 0"}
 if [[ "$CMD" == "-d" ]];
 then
