@@ -36,6 +36,7 @@ ADD hadoop-2.6.5.tar.gz /usr/local
 ADD zookeeper-3.4.13.tar.gz /usr/local
 ADD kafka_2.11-2.1.0.tgz /usr/local
 ADD apache-hive-2.3.4-bin.tar.gz /usr/local
+ADD hbase-2.0.5-bin.tar.gz /usr/local
 RUN mv /usr/local/apache-hive-2.3.4-bin/ /usr/local/hive-2.3.4/
 # http://blog.stuart.axelbrooke.com/python-3-on-spark-return-of-the-pythonhashseed
 ENV PYTHONHASHSEED 0
@@ -66,6 +67,13 @@ ENV HIVE_HOME /usr/local/hive-$HIVE_VERSION
 ENV HIVE_COMMON_HOME=$HIVE_HOME
 ENV PATH $PATH:$HIVE_HOME/bin
 
+#HBASE
+ENV HBASE_VERSION 2.0.5
+ENV HBASE_HOME /usr/local/hbase-$HBASE_VERSION
+ENV HBASE_COMMON_HOME=$HBASE_HOME
+ENV PATH $PATH:$HBASE_HOME/bin
+
+
 # SPARK
 ENV SPARK_VERSION 2.2.2-bin-hadoop2.6
 ENV SPARK_PACKAGE spark-${SPARK_VERSION}-bin-without-hadoop
@@ -80,7 +88,15 @@ RUN  rm $HADOOP_HOME/etc/hadoop/hadoop-env.sh \
  &&	rm $HADOOP_HOME/etc/hadoop/yarn-site.xml \
  &&	rm $HADOOP_HOME/etc/hadoop/slaves \
  && rm $SPARK_HOME/sbin/spark-config.sh \
- && sed -i 's/localhost/master/g' /usr/local/kafka_2.11-2.1.0/config/server.properties
+ && sed -i 's/localhost/master/g' /usr/local/kafka_2.11-2.1.0/config/server.properties \
+ && mkdir -p /usr/hbase \
+ && mkdir -p /usr/tmp \
+ && mkdir -p /usr/pids \
+ && rm -rf $HBASE_HOME/conf/hbase-site.xml \
+ && rm -rf $HBASE_HOME/conf/regionservers \
+ && rm -rf $HBASE_HOME/conf/hbase-env.sh \
+ && rm -rf $HADOOP_HOME/share/hadoop/yarn/lib/jline-0.9.94.jar \
+ && cp $HIVE_HOME/lib/jline-2.12.jar $HADOOP_HOME/share/hadoop/yarn/lib/
 COPY hive-site.xml $HIVE_COMMON_HOME/conf/
 COPY hive-env.sh $HIVE_COMMON_HOME/conf/
 COPY hive-log4j2.properties $HIVE_COMMON_HOME/conf/
@@ -97,6 +113,9 @@ COPY initRun.sh /usr/local/
 COPY zoo.cfg $ZOOKEEPER_HOME/conf/
 COPY KafkaOffsetMonitor-assembly-0.2.0.jar $KAFKA_HOME
 COPY kafka-monitor-start.sh $KAFKA_HOME
+COPY hbase-site.xml $HBASE_HOME/conf
+COPY regionservers $HBASE_HOME/conf
+COPY hbase-env.sh $HBASE_HOME/conf
 COPY mysql-connector-java-5.1.35.jar $HIVE_HOME/lib
 WORKDIR $SPARK_HOME
 CMD ["bin/spark-class", "org.apache.spark.deploy.master.Master"]
