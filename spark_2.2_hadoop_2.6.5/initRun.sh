@@ -9,6 +9,7 @@ hadoop fs -mkdir -p /usr/hive/warehouse
 hadoop fs -chmod g+w /tmp
 hadoop fs -chmod g+w /usr/hive/warehouse
 /usr/local/hadoop-2.6.5/sbin/start-yarn.sh
+/usr/local/hbase-2.0.5/bin/start-hbase.sh
 /usr/local/zookeeper-3.4.13/bin/zkServer.sh start
 /usr/local/mysql.sh
 schematool -dbType mysql -initSchema

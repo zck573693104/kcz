@@ -37,7 +37,9 @@ ADD zookeeper-3.4.13.tar.gz /usr/local
 ADD kafka_2.11-2.1.0.tgz /usr/local
 ADD apache-hive-2.3.4-bin.tar.gz /usr/local
 ADD hbase-2.0.5-bin.tar.gz /usr/local
+ADD apache-phoenix-5.0.0-HBase-2.0-bin.tar.gz /usr/local
 RUN mv /usr/local/apache-hive-2.3.4-bin/ /usr/local/hive-2.3.4/
+RUN mv /usr/local/apache-phoenix-5.0.0-HBase-2.0-bin /usr/local/phoenix-5.0.0
 # http://blog.stuart.axelbrooke.com/python-3-on-spark-return-of-the-pythonhashseed
 ENV PYTHONHASHSEED 0
 ENV PYTHONIOENCODING UTF-8
@@ -81,6 +83,13 @@ ENV SPARK_HOME /usr/local/spark-${SPARK_VERSION}
 ENV SPARK_DIST_CLASSPATH="$HADOOP_HOME/etc/hadoop/*:$HADOOP_HOME/share/hadoop/common/lib/*:$HADOOP_HOME/share/hadoop/common/*:$HADOOP_HOME/share/hadoop/hdfs/*:$HADOOP_HOME/share/hadoop/hdfs/lib/*:$HADOOP_HOME/share/hadoop/hdfs/*:$HADOOP_HOME/share/hadoop/yarn/lib/*:$HADOOP_HOME/share/hadoop/yarn/*:$HADOOP_HOME/share/hadoop/mapreduce/lib/*:$HADOOP_HOME/share/hadoop/mapreduce/*:$HADOOP_HOME/share/hadoop/tools/lib/*"
 ENV PATH $PATH:${SPARK_HOME}/bin
 
+#PHOENIX
+ENV PHOENIX_VERSION 5.0.0
+ENV PHOENIX_HOME /usr/local/$PHOENIX_VERSION
+ENV PHOENIX_COMMON_HOME=$PHOENIX_HOME
+ENV PATH $PATH:$PHOENIX_HOME/bin
+
+
 RUN  rm $HADOOP_HOME/etc/hadoop/hadoop-env.sh \
  &&	rm $HADOOP_HOME/etc/hadoop/yarn-env.sh \
  &&	rm $HADOOP_HOME/etc/hadoop/core-site.xml \
@@ -96,7 +105,9 @@ RUN  rm $HADOOP_HOME/etc/hadoop/hadoop-env.sh \
  && rm -rf $HBASE_HOME/conf/regionservers \
  && rm -rf $HBASE_HOME/conf/hbase-env.sh \
  && rm -rf $HADOOP_HOME/share/hadoop/yarn/lib/jline-0.9.94.jar \
- && cp $HIVE_HOME/lib/jline-2.12.jar $HADOOP_HOME/share/hadoop/yarn/lib/
+ && cp $HIVE_HOME/lib/jline-2.12.jar $HADOOP_HOME/share/hadoop/yarn/lib/ \
+ && cp /usr/local/phoenix-5.0.0/phoenix-core-5.0.0-HBase-2.0.jar /usr/local/hbase-2.0.5/lib/ \
+ && cp /usr/local/phoenix-5.0.0/phoenix-5.0.0-HBase-2.0-server.jar /usr/local/hbase-2.0.5/lib/
 COPY hive-site.xml $HIVE_COMMON_HOME/conf/
 COPY hive-env.sh $HIVE_COMMON_HOME/conf/
 COPY hive-log4j2.properties $HIVE_COMMON_HOME/conf/
