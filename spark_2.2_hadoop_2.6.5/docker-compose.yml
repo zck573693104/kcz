@@ -39,12 +39,12 @@ services:
       - 16030:16030
       - 16010:16010
     extra_hosts:
-      - "master:172.24.0.2"
       - "worker1:172.24.0.3"
       - "worker2:172.24.0.4"
     volumes:
       - ./conf/master:/conf
       - ./tmp:/tmp/data
+      - ./data:/data/mysql
   worker1:
     depends_on:
       - "master"
@@ -78,7 +78,6 @@ services:
       - 19888:19888
     extra_hosts:
       - "master:172.24.0.2"
-      - "worker1:172.24.0.3"
     volumes:
       - ./conf/master:/conf
       - ./tmp:/tmp/data
