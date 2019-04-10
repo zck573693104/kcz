@@ -1,4 +1,5 @@
 #!/bin/bash
+service mysql start
 /usr/local/hadoop-2.6.5/sbin/start-dfs.sh
 /usr/local/hadoop-2.6.5/sbin/start-yarn.sh
 /usr/local/hbase-2.0.5/bin/start-hbase.sh
