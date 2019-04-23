@@ -19,6 +19,7 @@ target/
 *.MYd
 *.gz
 *.tar
+*.data
 ### NetBeans ###
 nbproject/private/
 build/
