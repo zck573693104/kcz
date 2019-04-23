@@ -13,7 +13,12 @@ target/
 *.iws
 *.iml
 *.ipr
-
+*.frm
+*.ibd
+*.MYl
+*.MYd
+*.gz
+*.tar
 ### NetBeans ###
 nbproject/private/
 build/
