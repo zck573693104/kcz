@@ -1,9 +1,11 @@
-FROM centos
+FROM centos:centos6.6
 COPY mysql.sh /usr/local
 COPY mysql-5.6.43.tar.gz /usr/local
 COPY bootstrap.sh /etc/bootstrap.sh
-RUN yum install  openssh-server openssh-clients unzip python3 python3-setuptools  numactl libaio tar  perl perl-devel perl-Data-Dumper -y \
-&& mkdir -p /usr/local/mysql-5.6.43 && tar -zxvf /usr/local/mysql-5.6.43.tar.gz -C /usr/local/mysql-5.6.43 --strip-components 1 \
+COPY cdh.sh /usr/local
+ADD jdk-8u191-linux-x64.tar.gz /usr/java/
+RUN yum install yum-utils createrepo httpd  vim openssh-server openssh-clients unzip python3 python3-setuptools  numactl libaio tar  perl perl-devel perl-Data-Dumper -y \
+ && mkdir -p /usr/local/mysql-5.6.43 && tar -zxvf /usr/local/mysql-5.6.43.tar.gz -C /usr/local/mysql-5.6.43 --strip-components 1 \
  && ssh-keygen -q -t rsa -b 2048 -f /etc/ssh/ssh_host_rsa_key -N '' \
  && ssh-keygen -f /root/.ssh/id_rsa -N '' \
  && touch /root/.ssh/authorized_keys \
@@ -12,18 +14,54 @@ RUN yum install  openssh-server openssh-clients unzip python3 python3-setuptools
  && sed -i 's/#   StrictHostKeyChecking ask/StrictHostKeyChecking no/g' /etc/ssh/ssh_config \
  && echo "root:123456" | chpasswd \
  && rm -rf /etc/my.cnf \
-  && mkdir -p /data/mysql \
+ && mkdir -p /data/mysql \
+ && mkdir -p /usr/share/java \
+ && mkdir -p /var/cloudera-scm-server \
+ && mkdir -p /opt/cloudera/parcel-repo \
+ && mkdir -p /opt/cloudera-manager \
  && chown -R root:root /usr/local/mysql-5.6.43 \
  && chown root.root /etc/bootstrap.sh \
  && chmod 700 /etc/bootstrap.sh \
- && chmod 700 /usr/local/mysql.sh
+ && chmod 700 /usr/local/mysql.sh \
+ && chmod 700 /usr/local/cdh.sh
 
 COPY mysql_init.sql /usr/local
 COPY my.cnf /etc
 COPY mysql.server /etc/init.d/mysql
+COPY mysql-connector.jar /usr/share/java/mysql-connector-java.jar
+COPY cloudera-manager-el6-cm5.7.0_x86_64.tar.gz /usr/local
+COPY CDH-5.7.0-1.cdh5.7.0.p0.45-el6.parcel /opt/cloudera/parcel-repo
+COPY CDH-5.7.0-1.cdh5.7.0.p0.45-el6.parcel.sha /opt/cloudera/parcel-repo
+COPY manifest.json /opt/cloudera/parcel-repo
+RUN tar xf /usr/local/cloudera-manager-el6-cm5.7.0_x86_64.tar.gz -C /opt/cloudera-manager \
+   && useradd --system --home=/opt/cloudera-manager/cm-5.7.0/run/cloudera-scm-server --no-create-home --shell=/bin/false --comment "Cloudera SCM User" cloudera-scm \
+   && chown cloudera-scm:cloudera-scm /var/cloudera-scm-server \
+   && chown cloudera-scm:cloudera-scm /opt/cloudera-manager \
+   && chown cloudera-scm:cloudera-scm /opt/cloudera/parcel-repo \
+   && sed -i 's/server_host=localhost/server_host=master/g' /opt/cloudera-manager/cm-5.7.0/etc/cloudera-scm-agent/config.ini \
+   && rm -rf /opt/cloudera-manager/cm-5.7.0/etc/init.d/cloudera-scm-server \
+   && rm -rf /opt/cloudera-manager/cm-5.7.0/etc/init.d/cloudera-scm-agent
+
+COPY cloudera-scm-server /opt/cloudera-manager/cm-5.7.0/etc/init.d
+COPY cloudera-scm-agent /opt/cloudera-manager/cm-5.7.0/etc/init.d
+
+RUN cp /opt/cloudera-manager/cm-5.7.0/etc/init.d/cloudera-scm-server /etc/init.d \
+    && cp /opt/cloudera-manager/cm-5.7.0/etc/init.d/cloudera-scm-agent /etc/init.d \
+    && mkdir /opt/cloudera-manager/cm-5.7.0/run/cloudera-scm-agent
+
+
+
 #MYSQL
 ENV MYSQL_VERSION 5.6.43
 ENV MYSQL_HOME /usr/local/mysql-$MYSQL_VERSION
 ENV PATH $PATH:$MYSQL_HOME/bin
+
+# JAVA
+ARG JAVA_MAJOR_VERSION=8
+ARG JAVA_UPDATE_VERSION=191
+ARG JAVA_BUILD_NUMBER=12
+ENV JAVA_HOME /usr/java/jdk1.${JAVA_MAJOR_VERSION}.0_${JAVA_UPDATE_VERSION}
+ENV PATH $PATH:$JAVA_HOME/bin
+
 CMD ["/usr/bin/mysqld_safe"]
 ENTRYPOINT ["/etc/bootstrap.sh"]

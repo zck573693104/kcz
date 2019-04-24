@@ -4,6 +4,7 @@ services:
     build: .
     container_name: spark_master
     hostname: master
+    privileged: true
     expose:
       - 7001
       - 7002
@@ -39,13 +40,12 @@ services:
     extra_hosts:
       - "worker1:172.24.0.3"
       - "worker2:172.24.0.4"
-    volumes:
-      - ./tmp:/tmp/data
-      - ./data:/data/mysql
+
   worker1:
     depends_on:
       - "master"
     build: .
+    privileged: true
     container_name: spark_worker1
     hostname: worker1
     links:
@@ -66,6 +66,3 @@ services:
       - 50010:50010
     extra_hosts:
       - "master:172.24.0.2"
-    volumes:
-      - ./tmp:/tmp/data
-      - ./data:/data/mysql

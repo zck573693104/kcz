@@ -4,6 +4,7 @@ services:
     build: .
     container_name: spark_master
     hostname: master
+    privileged: true
     expose:
       - 7001
       - 7002
@@ -18,7 +19,6 @@ services:
       - 9000
       - 9999
       - 10020
-      - 7180
     ports:
       - 4040:4040
       - 6066:6066
@@ -37,10 +37,9 @@ services:
       - 16010:16010
       - 12000:12000
       - 19888:19888
-      - 7180:7180
     extra_hosts:
-      - "worker1:172.26.0.3"
-      - "worker2:172.26.0.4"
+      - "worker1:172.24.0.3"
+      - "worker2:172.24.0.4"
     volumes:
       - ./tmp:/tmp/data
       - ./data:/data/mysql
@@ -49,6 +48,7 @@ services:
       - "master"
     build: .
     container_name: spark_worker1
+    privileged: true
     hostname: worker1
     links:
       - master
@@ -61,15 +61,13 @@ services:
       - 18080
       - 9000
       - 10020
-      - 7180
     ports:
       - 8081:8081
       - "40002:22"
-      - 40075:50075
+      - 50075:50075
       - 50010:50010
-      - 7181:7180
     extra_hosts:
-      - "master:172.26.0.2"
+      - "master:172.24.0.2"
     volumes:
       - ./tmp:/tmp/data
       - ./data:/data/mysql

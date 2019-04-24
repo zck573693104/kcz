@@ -1,0 +1,3 @@
+update user set password=password("123456");
+GRANT ALL PRIVILEGES ON *.* TO root@"%" IDENTIFIED BY "123456" WITH GRANT OPTION ;
+FLUSH PRIVILEGES;
