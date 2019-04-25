@@ -7,6 +7,7 @@ create database hive DEFAULT CHARACTER SET utf8;
 grant all on hive.* TO 'hive'@'%'IDENTIFIED BY '123456';
 create database hue DEFAULT CHARACTER SET utf8;
 grant all on hue.* TO 'hue'@'%'IDENTIFIED BY '123456';
+drop database if exists oozie;
 create database oozie DEFAULT CHARACTER SET utf8;
 grant all on oozie.* TO 'oozie'@'%'IDENTIFIED BY '123456';
 create database amon DEFAULT CHARACTER SET utf8;
