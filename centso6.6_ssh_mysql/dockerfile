@@ -24,7 +24,7 @@ RUN yum install krb5-devel cyrus-sasl-gssapi cyrus-sasl-deve libxml2-devel libxs
  && chmod 700 /etc/bootstrap.sh \
  && chmod 700 /usr/local/mysql.sh \
  && chmod 700 /usr/local/cdh.sh \
- && chmod 700 /data
+ && chmod 777 /data
 
 COPY mysql_init.sql /usr/local
 COPY my.cnf /etc
