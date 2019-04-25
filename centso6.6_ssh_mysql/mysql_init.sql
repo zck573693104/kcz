@@ -1,6 +1,16 @@
 update user set password=password("123456");
 CREATE USER 'scm'@'%' IDENTIFIED BY '123456';
-GRANT ALL PRIVILEGES ON *.* TO  scm@"%" IDENTIFIED BY "123456";
+GRANT ALL PRIVILEGES ON *.* TO  scm@"%" IDENTIFIED BY '123456';
 update user set Password = password('123456') where User='scm';
-GRANT ALL PRIVILEGES ON *.* TO root@"%" IDENTIFIED BY "123456" WITH GRANT OPTION ;
+GRANT ALL PRIVILEGES ON *.* TO root@"%" IDENTIFIED BY '123456' WITH GRANT OPTION ;
+create database hive DEFAULT CHARACTER SET utf8;
+grant all on hive.* TO 'hive'@'%'IDENTIFIED BY '123456';
+create database hue DEFAULT CHARACTER SET utf8;
+grant all on hue.* TO 'hue'@'%'IDENTIFIED BY '123456';
+create database oozie DEFAULT CHARACTER SET utf8;
+grant all on oozie.* TO 'oozie'@'%'IDENTIFIED BY '123456';
+create database amon DEFAULT CHARACTER SET utf8;
+grant all on amon.* TO 'monitor'@'%' IDENTIFIED BY '123456';
+create database monitor DEFAULT CHARACTER SET utf8;
+grant all on monitor.* TO 'monitor'@'%' IDENTIFIED BY '123456';
 FLUSH PRIVILEGES;
