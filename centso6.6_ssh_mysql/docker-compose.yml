@@ -2,8 +2,8 @@ version: "2.1"
 services:
   master:
     build: .
-    container_name: spark_master
-    hostname: master
+    container_name: cdh_master
+    hostname: cdh_master
     expose:
       - 7001
       - 7002
@@ -20,7 +20,6 @@ services:
       - 10020
       - 7180
       - 8888
-      - 8020
     ports:
       - 4040:4040
       - 6066:6066
@@ -42,39 +41,9 @@ services:
       - 7180:7180
       - 8082:80
       - 8888:8888
-      - 8020:8020
     extra_hosts:
       - "worker1:172.26.0.3"
       - "worker2:172.26.0.4"
-    volumes:
-      - ./tmp:/tmp/data
-      - ./data:/data/mysql
-  worker1:
-    depends_on:
-      - "master"
-    build: .
-    container_name: spark_worker1
-    hostname: worker1
-    links:
-      - master
-    expose:
-      - 7012
-      - 7013
-      - 7014
-      - 7015
-      - 8881
-      - 18080
-      - 9000
-      - 10020
-      - 7180
-    ports:
-      - 8081:8081
-      - "40002:22"
-      - 40075:50075
-      - 50010:50010
-      - 7181:7180
-    extra_hosts:
-      - "master:172.26.0.2"
     volumes:
       - ./tmp:/tmp/data
       - ./data:/data/mysql
