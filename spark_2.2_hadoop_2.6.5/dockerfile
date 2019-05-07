@@ -2,22 +2,23 @@ FROM centos:centos6.6
 MAINTAINER zck
 
 COPY phoenix-5.0.0.tar.gz /usr/local
-COPY hive-2.3.4.tar.gz /usr/local
+COPY apache-hive-2.1.1-bin.tar.gz /usr/local
 COPY mysql-5.6.43.tar.gz /usr/local
 ADD jdk-8u191-linux-x64.tar.gz /usr/java/
-ADD spark-2.2.2-bin-hadoop2.6.tgz /usr/local/
-ADD hadoop-2.6.5.tar.gz /usr/local
+ADD spark-2.3.3-bin-without-hadoop.tgz /usr/local/
+ADD hadoop-2.8.5.tar.gz /usr/local
 ADD zookeeper-3.4.13.tar.gz /usr/local
 ADD kafka_2.11-2.1.0.tgz /usr/local
-ADD hbase-2.0.5-bin.tar.gz /usr/local
-ADD sqoop-1.99.7-bin-hadoop200.tar.gz /usr/local
+ADD hbase-1.4.9-bin.tar.gz /usr/local
+ADD sqoop-1.4.7.bin__hadoop-2.6.0.tar.gz /usr/local
+ADD apache-kylin-2.6.1-bin-hbase1x.tar.gz /usr/local
 COPY bootstrap.sh /etc/bootstrap.sh
 COPY mysql.sh /usr/local
 
 RUN  yum install -y unzip python3 python3-setuptools  numactl libaio tar \
  && mkdir -p /usr/local/mysql-5.6.43 && tar -zxvf /usr/local/mysql-5.6.43.tar.gz -C /usr/local/mysql-5.6.43 --strip-components 1 \
  && mkdir -p /usr/local/phoenix-5.0.0 && tar -zxvf /usr/local/phoenix-5.0.0.tar.gz -C /usr/local/phoenix-5.0.0 --strip-components 1 \
- && mkdir -p /usr/local/hive-2.3.4 && tar -zxvf /usr/local/hive-2.3.4.tar.gz -C /usr/local/hive-2.3.4 --strip-components 1 \
+ && mkdir -p /usr/local/hive-2.1.1 && tar -zxvf /usr/local/apache-hive-2.1.1-bin.tar.gz -C /usr/local/hive-2.1.1 --strip-components 1 \
  && yum install -y net-tools \
  && yum -y install bzip2 zip gzip\
  && yum install -y vim curl openssh-server openssh-clients \
@@ -30,7 +31,7 @@ RUN  yum install -y unzip python3 python3-setuptools  numactl libaio tar \
  && echo "root:123456" | chpasswd \
  && rm -rf /var/lib/apt/lists/* \
  && rm -rf /etc/my.cnf \
- && rm -rf /usr/local/sqoop-1.99.7-bin-hadoop200/conf/sqoop.properties \
+ && rm -rf /usr/local/sqoop-1.4.7.bin__hadoop-2.6.0/conf/sqoop.properties \
  && mkdir -p /data/mysql \
  && chown -R root:root /usr/local/mysql-5.6.43 \
  && chown root.root /etc/bootstrap.sh \
@@ -62,28 +63,29 @@ ENV KAFKA_HOME=/usr/local/kafka_2.11-2.1.0
 ENV PATH=$PATH:$KAFKA_HOME/bin
 
 # HADOOP
-ENV HADOOP_VERSION 2.6.5
+ENV HADOOP_VERSION 2.8.5
 ENV HADOOP_HOME /usr/local/hadoop-$HADOOP_VERSION
 ENV HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 #ENV HADOOP_COMMON_HOME=$HADOOP_HOME
 ENV PATH $PATH:$HADOOP_HOME/bin
 
 #HIVE
-ENV HIVE_VERSION 2.3.4
+ENV HIVE_VERSION 2.1.1
 ENV HIVE_HOME /usr/local/hive-$HIVE_VERSION
+ENV HCAT_HOME $HIVE_HOME/hcatalog
 ENV HIVE_COMMON_HOME=$HIVE_HOME
 ENV PATH $PATH:$HIVE_HOME/bin
 
 #HBASE
-ENV HBASE_VERSION 2.0.5
+ENV HBASE_VERSION 1.4.9
 ENV HBASE_HOME /usr/local/hbase-$HBASE_VERSION
 ENV HBASE_COMMON_HOME=$HBASE_HOME
 ENV PATH $PATH:$HBASE_HOME/bin
 
 
 # SPARK
-ENV SPARK_VERSION 2.2.2-bin-hadoop2.6
-ENV SPARK_PACKAGE spark-${SPARK_VERSION}-bin-without-hadoop
+ENV SPARK_VERSION 2.3.3-bin-without-hadoop
+ENV SPARK_PACKAGE spark-${SPARK_VERSION}
 ENV SPARK_HOME /usr/local/spark-${SPARK_VERSION}
 ENV SPARK_DIST_CLASSPATH="$HADOOP_HOME/etc/hadoop/*:$HADOOP_HOME/share/hadoop/common/lib/*:$HADOOP_HOME/share/hadoop/common/*:$HADOOP_HOME/share/hadoop/hdfs/*:$HADOOP_HOME/share/hadoop/hdfs/lib/*:$HADOOP_HOME/share/hadoop/hdfs/*:$HADOOP_HOME/share/hadoop/yarn/lib/*:$HADOOP_HOME/share/hadoop/yarn/*:$HADOOP_HOME/share/hadoop/mapreduce/lib/*:$HADOOP_HOME/share/hadoop/mapreduce/*:$HADOOP_HOME/share/hadoop/tools/lib/*"
 ENV PATH $PATH:${SPARK_HOME}/bin
@@ -95,8 +97,8 @@ ENV PHOENIX_COMMON_HOME=$PHOENIX_HOME
 ENV PATH $PATH:$PHOENIX_HOME/bin
 
 #SQOOP
-ENV SQOOP_VERSION 1.99.7
-ENV SQOOP_HOME /usr/local/sqoop-$SQOOP_VERSION-bin-hadoop200
+ENV SQOOP_VERSION 1.4.7
+ENV SQOOP_HOME /usr/local/sqoop-$SQOOP_VERSION-bin__hadoop-2.6.0
 ENV PATH $PATH:$SQOOP_HOME/bin
 
 #MYSQL
@@ -104,6 +106,11 @@ ENV MYSQL_VERSION 5.6.43
 ENV MYSQL_HOME /usr/local/mysql-$MYSQL_VERSION
 ENV PATH $PATH:$MYSQL_HOME/bin
 
+#KYLIN
+ENV KYLIN_VERSION 2.6.1
+ENV KYLIN_HOME /usr/local/apache-kylin-$KYLIN_VERSION-bin-hbase1x
+ENV hive_dependency $HIVE_HOME/conf:$HIVE_HOME/lib/*:$HCAT_HOME/share/hcatalog/hive-hcatalog-core-*.jar
+ENV PATH $PATH:$KYLIN_HOME/bin
 
 RUN  rm $HADOOP_HOME/etc/hadoop/hadoop-env.sh \
  &&	rm $HADOOP_HOME/etc/hadoop/yarn-env.sh \
@@ -112,6 +119,8 @@ RUN  rm $HADOOP_HOME/etc/hadoop/hadoop-env.sh \
  &&	rm $HADOOP_HOME/etc/hadoop/yarn-site.xml \
  &&	rm $HADOOP_HOME/etc/hadoop/slaves \
  && rm $SPARK_HOME/sbin/spark-config.sh \
+ && rm $KYLIN_HOME/conf/kylin.properties \
+ && rm $KYLIN_HOME/bin/kylin.sh \
  && sed -i 's/localhost/master/g' /usr/local/kafka_2.11-2.1.0/config/server.properties \
  && mkdir -p /usr/hbase \
  && mkdir -p /usr/tmp \
@@ -121,8 +130,8 @@ RUN  rm $HADOOP_HOME/etc/hadoop/hadoop-env.sh \
  && rm -rf $HBASE_HOME/conf/hbase-env.sh \
  && rm -rf $HADOOP_HOME/share/hadoop/yarn/lib/jline-0.9.94.jar \
  && cp $HIVE_HOME/lib/jline-2.12.jar $HADOOP_HOME/share/hadoop/yarn/lib/ \
- && cp /usr/local/phoenix-5.0.0/phoenix-core-5.0.0-HBase-2.0.jar /usr/local/hbase-2.0.5/lib/ \
- && cp /usr/local/phoenix-5.0.0/phoenix-5.0.0-HBase-2.0-server.jar /usr/local/hbase-2.0.5/lib/
+ && cp /usr/local/phoenix-5.0.0/phoenix-core-5.0.0-HBase-2.0.jar /usr/local/hbase-1.4.9/lib/ \
+ && cp /usr/local/phoenix-5.0.0/phoenix-5.0.0-HBase-2.0-server.jar /usr/local/hbase-1.4.9/lib/
 COPY hive-site.xml $HIVE_COMMON_HOME/conf/
 COPY hive-env.sh $HIVE_COMMON_HOME/conf/
 COPY hive-log4j2.properties $HIVE_COMMON_HOME/conf/
@@ -148,8 +157,20 @@ COPY json-serde-1.3.6-jar-with-dependencies.jar $HIVE_HOME/lib
 COPY mysql-connector-java-5.1.35.jar $SQOOP_HOME/server/lib
 COPY mysql-connector-java-5.1.35.jar $SPARK_HOME/jars
 COPY mysql.server /etc/init.d/mysql
-COPY sqoop.properties /usr/local/sqoop-1.99.7-bin-hadoop200/conf/
+COPY sqoop.properties /usr/local/sqoop-1.4.7.bin__hadoop-2.6.0/conf/
 COPY cpjson.sh /usr/local
+COPY kylin.properties /usr/local/apache-kylin-2.6.1-bin-hbase1x/conf
+COPY kylin.sh /usr/local/apache-kylin-2.6.1-bin-hbase1x/bin
+RUN ln -s /usr/local/hadoop-2.8.5 /usr/local/hadoop \
+    && ln -s /usr/local/hbase-1.4.9 /usr/local/hbase \
+    && ln -s /usr/local/hive-2.1.1 /usr/local/hive  \
+    && ln -s /usr/local/kafka_2.11-2.1.0 /usr/local/kafka  \
+    && ln -s /usr/local/mysql-5.6.43 /usr/local/mysql  \
+    && ln -s /usr/local/spark-2.3.3-bin-without-hadoop /usr/local/spark  \
+    && ln -s /usr/local/sqoop-1.4.7-bin__hadoop-2.6.0 /usr/local/sqoop  \
+    && ln -s /usr/local/zookeeper-3.4.13 /usr/local/zookeeper  \
+    && ln -s /usr/local/apache-kylin-2.6.1-bin-hbase1x /usr/local/kylin  \
+    && rm -rf /usr/local/*.gz
 WORKDIR $SPARK_HOME
 CMD ["bin/spark-class", "org.apache.spark.deploy.master.Master"]
 ENTRYPOINT ["/etc/bootstrap.sh"]

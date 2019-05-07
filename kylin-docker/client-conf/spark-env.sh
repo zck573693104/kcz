@@ -1,0 +1,4 @@
+export SPARK_HISTORY_OPTS="-Dspark.history.ui.port=18080 -Dspark.history.retainedApplications=3 -Dspark.history.fs.logDirectory=hdfs://master:9000/history"
+export HADOOP_CONF_DIR=/usr/local/hadoop/etc/hadoop
+export SPARK_SUBMIT_OPTS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
+export SPARK_CLASSPATH=/usr/local/hbase/lib/hbase-client1.4.9.jar:/usr/local/hbase1.4.9/lib/hbase-server1.4.9.jar:/usr/local/hbase1.4.9/lib/hadoop-common-2.7.7.jar:/usr/local/hbase1.4.9/lib/hbase-protocol1.4.9.jar:/usr/local/hbase1.4.9/lib/htrace-core-3.2.0-incubating.jar:/usr/local/hbase1.4.9/lib/hbase-hadoop2-compat1.4.9.jar:/usr/local/hbase1.4.9/lib/hbase-it1.4.9.jar:/usr/local/hbase1.4.9/lib/guava-11.0.2.jar:/usr/local/hbase1.4.9/lib/hbase-common1.4.9.jar

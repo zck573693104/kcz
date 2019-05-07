@@ -133,8 +133,8 @@ export HBASE_OPTS="$HBASE_OPTS -XX:+UseConcMarkSweepGC"
 # The reason for changing default to RFA is to avoid the boundary case of filling out disk space as 
 # DRFA doesn't put any cap on the log size. Please refer to HBase-5655 for more context.
 export JAVA_HOME=/usr/java/jdk1.8.0_191
-export HADOOP_HOME=/usr/local/hadoop-2.6.5/
-export HBASE_HOME=/usr/local/hbase-2.0.5/
-export HBASE_CLASSPATH=/usr/local/hadoop-2.6.5/etc/hadoop
+export HADOOP_HOME=/usr/local/hadoop/
+export HBASE_HOME=/usr/local/hbase/
+export HBASE_CLASSPATH=/usr/local/hadoop/etc/hadoop
 export HBASE_PID_DIR=/usr/hbase/pids
 export HBASE_MANAGES_ZK=false
