@@ -22,7 +22,7 @@
 # remote nodes.
 
 # The java implementation to use.
-export JAVA_HOME=/usr/java/jdk1.8.0_191
+export JAVA_HOME=/usr/local/java
 export HADOOP_PREFIX=/usr/local/hadoop
 export HADOOP_HOME=/usr/local/hadoop
 

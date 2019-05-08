@@ -109,7 +109,8 @@ ENV PATH $PATH:$MYSQL_HOME/bin
 #KYLIN
 ENV KYLIN_VERSION 2.6.1
 ENV KYLIN_HOME /usr/local/apache-kylin-$KYLIN_VERSION-bin-hbase1x
-ENV hive_dependency $HIVE_HOME/conf:$HIVE_HOME/lib/*:$HCAT_HOME/share/hcatalog/hive-hcatalog-core-*.jar
+ENV hive_dependency $HIVE_HOME/lib/hive-common-*.jar:$HCAT_HOME/share/hcatalog/hive-hcatalog-core-*.jar
+export KYLIN_CONF_HOME=$KYLIN_HOME/conf
 ENV PATH $PATH:$KYLIN_HOME/bin
 
 RUN  rm $HADOOP_HOME/etc/hadoop/hadoop-env.sh \
@@ -163,6 +164,7 @@ COPY kylin.properties /usr/local/apache-kylin-2.6.1-bin-hbase1x/conf
 COPY kylin.sh /usr/local/apache-kylin-2.6.1-bin-hbase1x/bin
 RUN ln -s /usr/local/hadoop-2.8.5 /usr/local/hadoop \
     && ln -s /usr/local/hbase-1.4.9 /usr/local/hbase \
+    && ln -s /usr/java/jdk1.8.0_191/ /usr/local/java \
     && ln -s /usr/local/hive-2.1.1 /usr/local/hive  \
     && ln -s /usr/local/kafka_2.11-2.1.0 /usr/local/kafka  \
     && ln -s /usr/local/mysql-5.6.43 /usr/local/mysql  \
