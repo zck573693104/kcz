@@ -17,7 +17,6 @@ RUN yum install -y initscripts net-tools passwd openssl openssh-server openssh-c
     && sed -i "s/UsePAM.*/UsePAM no/g" /etc/ssh/sshd_config \
     && sed -i "s/#UsePrivilegeSeparation.*/UsePrivilegeSeparation no/g" /etc/ssh/sshd_config \
     && sed -i 's/#   StrictHostKeyChecking ask/StrictHostKeyChecking no/g' /etc/ssh/ssh_config \
-    && chmod 700 /usr/local/mysql.sh \
     && echo "root:123456" | chpasswd \
     && chown root.root /etc/bootstrap.sh \
     && chmod 700 /etc/bootstrap.sh \
@@ -33,7 +32,8 @@ RUN yum install -y initscripts net-tools passwd openssl openssh-server openssh-c
 #source /tmp/py3_env/bin/activate
 #deactivate
 #pip3 install pandas==0.23.4
-#pip3 install SQLAlchemy==1.2.18 pip3 install kylinpy
+#pip3 install SQLAlchemy==1.2.18
+#pip3 install kylinpy
 #superset runserver -d
 CMD ["/usr/sbin/init"]
 ENTRYPOINT ["/etc/bootstrap.sh"]
