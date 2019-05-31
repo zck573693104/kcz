@@ -1,0 +1,11 @@
+version: "2.1"
+services:
+  master:
+    build: .
+    container_name: superset
+    hostname: superset
+    ports:
+      - 7077:8088
+      - "40002:22"
+    volumes:
+      - ./data:/data

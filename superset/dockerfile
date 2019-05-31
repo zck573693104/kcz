@@ -1,0 +1,58 @@
+FROM centos:7
+MAINTAINER zck
+
+
+#https://www.python.org/ftp/python/3.6.2/Python-3.6.2.tar.xz
+COPY bootstrap.sh /etc/bootstrap.sh
+ADD Python-3.6.2.tar.xz /usr/local
+
+RUN  echo "root:123456" | chpasswd \
+    && chown root.root /etc/bootstrap.sh \
+    && mkdir -p  /var/run/sshd/ \
+    && chmod 700 /etc/bootstrap.sh
+
+#virtualenv -p /usr/local/python3/bin/python3 /tmp/py3_env/
+#source /tmp/py3_env/bin/activate
+#deactivate
+#pip3 install pandas==0.23.4
+#pip3 install SQLAlchemy==1.2.18 pip3 install kylinpy
+#superset runserver -d
+ENTRYPOINT ["/etc/bootstrap.sh"]
+
+yum -y install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel
+wget https://www.python.org/ftp/python/3.6.2/Python-3.6.2.tar.xz
+mkdir /usr/local/python3
+tar xf  Python-3.6.2.tar.xz
+cd Python-3.6.2
+./configure --prefix=/usr/local/python3
+make && make install
+ln -s /usr/local/python3/bin/python3 /usr/bin/python3
+ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3
+pip3 install virtualenv
+mkdir -p /tmp
+mkdir -p /tmp/py3_env
+
+virtualenv -p /usr/local/python3/bin/python3 /tmp/py3_env/
+source /tmp/py3_env/bin/activate
+deactivate
+
+pip3 install pandas==0.23.4
+pip3 install SQLAlchemy==1.2.18
+
+
+
+
+ yum install -y  gcc  bzip2-devel expat-devel gdbm-devel readline-devel sqlite-devel zlib-devel bzip2-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel wget \
+ && yum install -y   unzip  python3-setuptools  numactl libaio tar  perl perl-devel perl-Data-Dumper \
+
+ && yum install -y vim curl openssh-server openssh-clients \
+ && mkdir -p /tmp & mkdir -p /tmp/py3_env \
+  && ssh-keygen -q -t rsa -b 2048 -f /etc/ssh/ssh_host_rsa_key -N '' \
+     && ssh-keygen -q -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key -N '' \
+     && ssh-keygen -t dsa -f /etc/ssh/ssh_host_ed25519_key  -N ''  \
+     && ssh-keygen -f /root/.ssh/id_rsa -N '' \
+     && touch /root/.ssh/authorized_keys \
+     && cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys \
+     && sed -i "s/UsePAM.*/UsePAM no/g" /etc/ssh/sshd_config \
+     && sed -i "s/#UsePrivilegeSeparation.*/UsePrivilegeSeparation no/g" /etc/ssh/sshd_config \
+     && sed -i 's/#   StrictHostKeyChecking ask/StrictHostKeyChecking no/g' /etc/ssh/ssh_config \
