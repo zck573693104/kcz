@@ -6,8 +6,9 @@ MAINTAINER zck
 COPY bootstrap.sh /etc/bootstrap.sh
 ADD Python-3.6.2.tar.xz /usr/local
 
-RUN yum install -y initscripts net-tools passwd openssl openssh-server openssh-clients numactl libaio tar  perl perl-devel perl-Data-Dumper  \
-    && yum install -y gcc  bzip2-devel expat-devel gdbm-devel readline-devel sqlite-devel zlib-devel bzip2-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel wget \
+RUN yum install -y openssl-devel python-setuptools net-tools passwd openssl openssh-server openssh-clients python-virtualenv libaio tar  perl perl-devel perl-Data-Dumper  \
+    && yum install -y gcc gcc-c++ libffi-devel python-devel python-pip python-wheel gcc libsasl2-devel penldap-devel bzip2-devel expat-devel gdbm-devel readline-devel sqlite-devel zlib-devel bzip2-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel wget \
+    && yum install -y gcc gcc-c++ libffi-devel python-devel python-wheel openssl-devel libsasl2-devel openldap-devel \
     && ssh-keygen -q -t rsa -b 2048 -f /etc/ssh/ssh_host_rsa_key -N '' \
     && ssh-keygen -q -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key -N '' \
     && ssh-keygen -t dsa -f /etc/ssh/ssh_host_ed25519_key  -N ''  \
@@ -25,15 +26,29 @@ RUN yum install -y initscripts net-tools passwd openssl openssh-server openssh-c
     && cd /usr/local/Python-3.6.2 && make && make install \
     && ln -s /usr/local/python3/bin/python3 /usr/bin/python3 \
     && ln -s /usr/local/python3/bin/pip3 /usr/bin/pip3 \
-    && pip3 install virtualenv \
-    && mkdir -p /tmp/py3_env
+    && pip3 install --upgrade pip \
+    && pip3 install virtualenv
 
+#pip3 install --upgrade setuptools pip -i https://pypi.douban.com/simple
+#mkdir -p /tmp/py3_env
 #virtualenv -p /usr/local/python3/bin/python3 /tmp/py3_env/
+#/usr/local/python3/bin/virtualenv venv
+#cd venv
+#source bin/activate
+
 #source /tmp/py3_env/bin/activate
 #deactivate
 #pip3 install pandas==0.23.4
 #pip3 install SQLAlchemy==1.2.18
+#pip3 install superset -i https://pypi.douban.com/simple
 #pip3 install kylinpy
+#export LANG=en_US.utf8
+
+#运行 fabmanager create-admin --app superset 创建admin账户并设置相应信息
+#运行 superset db upgrade 初始化数据库
+#运行 superset load_examples 初始化数据
+#运行 superset init 初始化SuperSet
+#运行 superset runserver & 后台运行SuperSet
 #superset runserver -d
 CMD ["/usr/sbin/init"]
 ENTRYPOINT ["/etc/bootstrap.sh"]
