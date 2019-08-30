@@ -32,11 +32,7 @@ RUN yum install -y openssl-devel python-setuptools net-tools passwd openssl open
 #pip3 install --upgrade setuptools pip -i https://pypi.douban.com/simple
 #mkdir -p /tmp/py3_env
 #virtualenv -p /usr/local/python3/bin/python3 /tmp/py3_env/
-#/usr/local/python3/bin/virtualenv venv
-#cd venv
-#source bin/activate
-
-#source /tmp/py3_env/bin/activate
+#直接启动 source /tmp/py3_env/bin/activate
 #deactivate
 #pip3 install pandas==0.23.4
 #pip3 install SQLAlchemy==1.2.18
